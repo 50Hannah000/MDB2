@@ -24,7 +24,7 @@ public class StorageController {
     }
 
     private static SharedPreferences getPrefs(Context context) {
-        return context.getSharedPreferences("pokemon", Context.MODE_PRIVATE);
+        return context.getSharedPreferences("catchedPokemon", Context.MODE_PRIVATE);
     }
 
     public static List<Pokemon> getPokemons(Context context) {

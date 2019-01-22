@@ -34,7 +34,7 @@ public class PokemonDetailFragment extends Fragment {
     private ImageView image;
     private Button button;
     private Pokemon currentPokemon;
-    private List<Pokemon> pokemons;
+    private List<Pokemon> pokemons = new ArrayList<>();
     Context mContext;
 
     @Override
@@ -69,7 +69,7 @@ public class PokemonDetailFragment extends Fragment {
     public void catchPokemon(Pokemon pokemon){
         Random rand = new Random();
         if(rand.nextInt(4) == 0) {
-            File file = new File(mContext.getCacheDir(), "pokemon");
+            /*File file = new File(mContext.getCacheDir(), "pokemon");
             if(file.exists()) {
                 try {
                     FileInputStream fileInputStream = new FileInputStream(file);
@@ -77,10 +77,16 @@ public class PokemonDetailFragment extends Fragment {
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
+
+            pokemons = StorageController.getPokemons(mContext);
+
             pokemons.add(pokemon);
 
             StorageController.setPokemons(mContext, pokemons);
+
+            List<Pokemon> testList = StorageController.getPokemons(mContext);
+            Log.i("eyo", StorageController.listToString(testList));
         }
     }
 

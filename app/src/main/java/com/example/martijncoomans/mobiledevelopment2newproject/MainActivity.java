@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.ListView;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
@@ -49,7 +50,12 @@ public class MainActivity extends AppCompatActivity
 
         navigationView.setCheckedItem(R.id.nav_pokemon_list);
 
-        File tempFile = File.createTempFile("pokemon", ".txt", getCacheDir());
+        File tempFile = null;
+        try {
+            tempFile = File.createTempFile("pokemon", ".txt", getCacheDir());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         String tempFileName = tempFile.getAbsolutePath();
     }

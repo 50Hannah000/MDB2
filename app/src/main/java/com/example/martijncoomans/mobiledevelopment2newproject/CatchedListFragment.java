@@ -71,7 +71,10 @@ public class CatchedListFragment extends ListFragment {
     }
 
     public void getCatchedPokemons() {
-        File file = new File(mContext.getCacheDir(), "pokemon");
+        pokemons.clear();
+        pokemons = StorageController.getPokemons(mContext);
+        Log.i("pokes", StorageController.listToString(pokemons));
+        /*File file = new File(mContext.getCacheDir(), "pokemon");
         if(file.exists()) {
             try {
                 FileInputStream fileInputStream = new FileInputStream(file);
@@ -79,8 +82,7 @@ public class CatchedListFragment extends ListFragment {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-        }
-
+        }*/
     }
 
     private String readFromFileInputStream(FileInputStream fileInputStream)
