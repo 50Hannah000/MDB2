@@ -1,11 +1,18 @@
 package com.example.martijncoomans.mobiledevelopment2newproject;
 
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.Manifest;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompatExtras;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,20 +23,76 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, PokemonListFragment.OnSelectedItemListener {
+        implements NavigationView.OnNavigationItemSelectedListener, PokemonListFragment.OnSelectedItemListener, CatchedListFragment.OnSelectedItemListener {
 
     private FragmentManager fragmentManager = getFragmentManager();
 
+    /**
+     * permissions request code
+     */
+    private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
+
+    /**
+     * Permissions that need to be explicitly requested from end user.
+     */
+    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
+            Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+    /**
+     * Checks the dynamically-controlled permissions and requests missing permissions from end user.
+     */
+    protected void checkPermissions() {
+        final List<String> missingPermissions = new ArrayList<String>();
+        // check all required dynamic permissions
+        for (final String permission : REQUIRED_SDK_PERMISSIONS) {
+            final int result = ContextCompat.checkSelfPermission(this, permission);
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                missingPermissions.add(permission);
+            }
+        }
+        if (!missingPermissions.isEmpty()) {
+            // request all missing permissions
+            final String[] permissions = missingPermissions
+                    .toArray(new String[missingPermissions.size()]);
+            ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_ASK_PERMISSIONS);
+        } else {
+            final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
+            Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
+            onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, REQUIRED_SDK_PERMISSIONS,
+                    grantResults);
+        }
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_PERMISSIONS:
+                for (int index = permissions.length - 1; index >= 0; --index) {
+                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
+                        // exit the app if one permission is not granted
+                        Toast.makeText(this, "Required permission '" + permissions[index]
+                                + "' not granted, exiting", Toast.LENGTH_LONG).show();
+                        finish();
+                        return;
+                    }
+                }
+                // all permissions were granted
+                initialize();
+                break;
+        }
+    }
+
+    private void initialize() {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -49,15 +112,12 @@ public class MainActivity extends AppCompatActivity
                 .commit();
 
         navigationView.setCheckedItem(R.id.nav_pokemon_list);
+    }
 
-        File tempFile = null;
-        try {
-            tempFile = File.createTempFile("pokemon", ".txt", getCacheDir());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String tempFileName = tempFile.getAbsolutePath();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        checkPermissions();
     }
 
     @Override
@@ -119,16 +179,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onItemSelected(Pokemon pokemon) {
-        if (getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
             PokemonDetailFragment fragment = new PokemonDetailFragment();
             fragment.setArguments(new Bundle());
             fragment.getArguments().putSerializable("pokemon", pokemon);
 
             getFragmentManager().beginTransaction().replace(R.id.content_frame, fragment, "detail").addToBackStack(null).commit();
-        } else {
-            PokemonDetailFragment fragment = (PokemonDetailFragment) getFragmentManager().findFragmentById(R.id.content_frame);
-            Pokemon p = pokemon;
-            fragment.setPokemon(pokemon);
-        }
     }
 }

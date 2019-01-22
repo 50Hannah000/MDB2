@@ -76,7 +76,7 @@ public class PokemonListFragment extends ListFragment {
                         String url = jsonProduct.getString("url");
                         String[] segments = url.split("/");
                         int id = Integer.parseInt(segments[segments.length-1]);
-                        Pokemon pokemon = new Pokemon(jsonProduct.getString("name"), id, null);
+                        Pokemon pokemon = new Pokemon(jsonProduct.getString("name"), id, null, false);
 
                         pokemons.add(pokemon);
                     }

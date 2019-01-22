@@ -25,12 +25,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,40 +67,8 @@ public class CatchedListFragment extends ListFragment {
     public void getCatchedPokemons() {
         pokemons.clear();
         pokemons = StorageController.getPokemons(mContext);
-        Log.i("pokes", StorageController.listToString(pokemons));
-        /*File file = new File(mContext.getCacheDir(), "pokemon");
-        if(file.exists()) {
-            try {
-                FileInputStream fileInputStream = new FileInputStream(file);
-                pokemons = StorageController.stringToList(readFromFileInputStream(fileInputStream));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }*/
-    }
-
-    private String readFromFileInputStream(FileInputStream fileInputStream)
-    {
-        StringBuffer retBuf = new StringBuffer();
-
-        try {
-            if (fileInputStream != null) {
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-                String lineData = bufferedReader.readLine();
-                while (lineData != null) {
-                    retBuf.append(lineData);
-                    lineData = bufferedReader.readLine();
-                }
-            }
-        }catch(IOException ex)
-        {
-            Log.e("readFile", ex.getMessage(), ex);
-        }finally
-        {
-            return retBuf.toString();
-        }
+        mAdapter.addAll(pokemons);
+        mAdapter.notifyDataSetChanged();
     }
 }
 

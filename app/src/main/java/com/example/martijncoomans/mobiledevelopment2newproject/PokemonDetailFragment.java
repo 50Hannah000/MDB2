@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.graphics.drawable.Drawable;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -51,102 +52,67 @@ public class PokemonDetailFragment extends Fragment {
         id = view.findViewById(R.id.pokemon_detail_id);
         name = view.findViewById(R.id.pokemon_detail_name);
         image = view.findViewById(R.id.pokemon_detail_image);
-        button = view.findViewById(R.id.catch_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                currentPokemon.image = image.getDrawingCache();
-                catchPokemon(currentPokemon);
-            }
-        });
 
         if (getArguments() != null && getArguments().containsKey("pokemon")) {
             setPokemon((Pokemon) getArguments().getSerializable("pokemon"));
         }
+
+        if(currentPokemon.isCatched) {
+            button = view.findViewById(R.id.catch_button);
+            button.setText("Release");
+            button.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    currentPokemon.image = image.getDrawingCache();
+                    releasePokemon(currentPokemon);
+                }
+            });
+        } else {
+            button = view.findViewById(R.id.catch_button);
+            button.setText("Catch");
+            button.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    currentPokemon.image = image.getDrawingCache();
+                    catchPokemon(currentPokemon);
+                }
+            });
+        }
+
 
         return view;
     }
 
     public void catchPokemon(Pokemon pokemon){
         Random rand = new Random();
+        Toast toast = null;
         if(rand.nextInt(4) == 0) {
-            /*File file = new File(mContext.getCacheDir(), "pokemon");
-            if(file.exists()) {
-                try {
-                    FileInputStream fileInputStream = new FileInputStream(file);
-                    pokemons = StorageController.stringToList(readFromFileInputStream(fileInputStream));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }*/
-
+            toast = Toast.makeText(mContext, "You caught the pokemon!", Toast.LENGTH_SHORT);
             pokemons = StorageController.getPokemons(mContext);
+
+            pokemon.isCatched = true;
 
             pokemons.add(pokemon);
 
             StorageController.setPokemons(mContext, pokemons);
-
-            List<Pokemon> testList = StorageController.getPokemons(mContext);
-            Log.i("eyo", StorageController.listToString(testList));
+        } else {
+            toast = Toast.makeText(mContext, "Pokemon escaped!", Toast.LENGTH_SHORT);
         }
+        toast.show();
     }
 
-    private String readFromFileInputStream(FileInputStream fileInputStream)
-    {
-        StringBuffer retBuf = new StringBuffer();
+    public void releasePokemon(Pokemon pokemon) {
+        pokemons = StorageController.getPokemons(mContext);
 
-        try {
-            if (fileInputStream != null) {
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        Pokemon removeP = null;
 
-                String lineData = bufferedReader.readLine();
-                while (lineData != null) {
-                    retBuf.append(lineData);
-                    lineData = bufferedReader.readLine();
-                }
+        for(Pokemon p : pokemons){
+            if(p.id == pokemon.id) {
+                removeP = p;
             }
-        }catch(IOException ex)
-        {
-            Log.e("IOException", ex.getMessage(), ex);
-        }finally
-        {
-            return retBuf.toString();
         }
-    }
 
-    private void writeDataToFile(File file, String data)
-    {
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            this.writeDataToFile(fileOutputStream, data);
-            fileOutputStream.close();
-        }catch(FileNotFoundException ex)
-        {
-            Log.e("FileNotFound", ex.getMessage(), ex);
-        }catch(IOException ex)
-        {
-            Log.e("IOException", ex.getMessage(), ex);
-        }
-    }
+        pokemons.remove(removeP);
 
-    private void writeDataToFile(FileOutputStream fileOutputStream, String data)
-    {
-        try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
-            BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
-
-            bufferedWriter.write(data);
-
-            bufferedWriter.flush();
-            bufferedWriter.close();
-            outputStreamWriter.close();
-        }catch(FileNotFoundException ex)
-        {
-            Log.e("FileNotFound", ex.getMessage(), ex);
-        }catch(IOException ex)
-        {
-            Log.e("IOException", ex.getMessage(), ex);
-        }
+        StorageController.setPokemons(mContext, pokemons);
     }
 
     public void setPokemon(Pokemon pokemon) {
