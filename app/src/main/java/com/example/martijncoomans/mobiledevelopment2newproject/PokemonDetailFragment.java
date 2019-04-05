@@ -1,7 +1,8 @@
 package com.example.martijncoomans.mobiledevelopment2newproject;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.graphics.drawable.BitmapDrawable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,7 +27,6 @@ public class PokemonDetailFragment extends Fragment {
     private CustomAdapter mAdapter;
     private List<Pokemon> pokemons = new ArrayList<>();
     private Context mContext;
-    private FragmentManager fragmentManager = getFragmentManager();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,25 +47,20 @@ public class PokemonDetailFragment extends Fragment {
             setPokemon((Pokemon) getArguments().getSerializable("pokemon"));
         }
 
-        if(currentPokemon.isCatched) {
-            button = view.findViewById(R.id.catch_button);
-            button.setText("Release");
-            button.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    currentPokemon.image = image.getDrawingCache();
+        button = view.findViewById(R.id.catch_button);
+
+        button.setText(currentPokemon.isCatched ? "Release" : "Catch");
+
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                currentPokemon.image = ((BitmapDrawable)image.getDrawable()).getBitmap();
+                if(currentPokemon.isCatched){
                     releasePokemon(currentPokemon);
-                }
-            });
-        } else {
-            button = view.findViewById(R.id.catch_button);
-            button.setText("Catch");
-            button.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    currentPokemon.image = image.getDrawingCache();
+                } else {
                     catchPokemon(currentPokemon);
                 }
-            });
-        }
+            }
+        });
 
 
         return view;
@@ -74,24 +69,30 @@ public class PokemonDetailFragment extends Fragment {
     public void catchPokemon(Pokemon pokemon){
         Random rand = new Random();
         Toast toast = null;
-        if(pokemon.isCatched != true) {
+        /*if(pokemon.isCatched != true) {*/
             if(rand.nextInt(4) == 0) {
                 toast = Toast.makeText(mContext, "You caught the pokemon!", Toast.LENGTH_SHORT);
                 pokemons = StorageController.getPokemons(mContext);
 
-                pokemon.isCatched = true;
+                //creates copy of the pokemon
+                Pokemon tmpPokemon = new Pokemon(pokemon);
 
-                pokemons.add(pokemon);
+                //sets isCatched true on the copy
+                tmpPokemon.isCatched = true;
+
+                boolean test = pokemon.isCatched;
+
+                pokemons.add(tmpPokemon);
 
                 StorageController.setPokemons(mContext, pokemons);
             } else {
                 toast = Toast.makeText(mContext, "Pokemon escaped!", Toast.LENGTH_SHORT);
             }
-        }
+        /*}
         else {
             button.setBackgroundColor(5555);
             toast = Toast.makeText(mContext, "U already caught this pokemon!", Toast.LENGTH_SHORT);
-        }
+        }*/
         toast.show();
     }
 
@@ -111,6 +112,12 @@ public class PokemonDetailFragment extends Fragment {
         toast.show();
 
         StorageController.setPokemons(mContext, pokemons);
+
+        getFragmentManager().beginTransaction()
+                .replace(R.id.content_frame
+                        , new CatchedListFragment())
+                .remove(this)
+                .commit();
     }
 
     public void setPokemon(Pokemon pokemon) {

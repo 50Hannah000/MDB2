@@ -1,12 +1,13 @@
 package com.example.martijncoomans.mobiledevelopment2newproject;
 
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.Manifest;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, PokemonListFragment.OnSelectedItemListener, CatchedListFragment.OnSelectedItemListener {
 
-    private FragmentManager fragmentManager = getFragmentManager();
+    private FragmentManager fragmentManager = getSupportFragmentManager();
 
     /**
      * permissions request code
@@ -96,12 +97,15 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        fragmentManager.beginTransaction()
-                .replace(R.id.content_frame
-                        , new PokemonListFragment())
-                .commit();
+        //only set the PokemonListFragment if there are no fragments loaded
+        if(fragmentManager.getFragments().size() == 0) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame
+                            , new PokemonListFragment())
+                    .commit();
 
-        navigationView.setCheckedItem(R.id.nav_pokemon_list);
+            navigationView.setCheckedItem(R.id.nav_pokemon_list);
+        }
     }
 
     @Override
@@ -173,6 +177,7 @@ public class MainActivity extends AppCompatActivity
             fragment.setArguments(new Bundle());
             fragment.getArguments().putSerializable("pokemon", pokemon);
 
-            getFragmentManager().beginTransaction().replace(R.id.content_frame, fragment, "detail").addToBackStack(null).commit();
+            int subviewId = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ? R.id.content_frame : R.id.detail_frame;
+            getSupportFragmentManager().beginTransaction().replace(subviewId, fragment, "detail").commit();
     }
 }
