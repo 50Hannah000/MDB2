@@ -1,7 +1,6 @@
 package com.example.martijncoomans.mobiledevelopment2newproject;
 
 import android.graphics.Bitmap;
-
 import java.io.Serializable;
 
 public class Pokemon implements Serializable {

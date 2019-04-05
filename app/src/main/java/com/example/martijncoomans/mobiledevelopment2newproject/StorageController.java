@@ -2,33 +2,15 @@ package com.example.martijncoomans.mobiledevelopment2newproject;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Base64;
 import android.util.Log;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StorageController {
-    private SharedPreferences sharedPreferences;
-    private List<Pokemon> pokemon;
 
-    public StorageController() {
-
-    }
-
-    private static SharedPreferences getPrefs(Context context) {
-        return context.getSharedPreferences("catchedPokemon", Context.MODE_PRIVATE);
-    }
+    public StorageController() {  }
 
     public static List<Pokemon> getPokemons(Context context) {
-
         String data = getPrefs(context).getString("catchedPokemon", null);
         return data != null ? stringToList(data) : stringToList("");
     }
@@ -39,7 +21,13 @@ public class StorageController {
         editor.commit();
     }
 
-    public static String listToString(List<Pokemon> list) {
+    //function to create a string from the list of pokemons
+    private static SharedPreferences getPrefs(Context context) {
+        return context.getSharedPreferences("catchedPokemon", Context.MODE_PRIVATE);
+    }
+
+    //function to create a string from the list of pokemons
+    private static String listToString(List<Pokemon> list) {
         String string = "";
 
         for(int i = 0; i < list.size(); i++) {
@@ -50,13 +38,13 @@ public class StorageController {
         return string;
     }
 
-    public static List<Pokemon> stringToList(String string) {
+    //function to create a list from string
+    private static List<Pokemon> stringToList(String string) {
         List<Pokemon> list = new ArrayList<Pokemon>();
         if(string != "") {
             String[] pokemons = string.split("/row/");
             for(int i = 0; i < pokemons.length; i++) {
                 String[] attributes = pokemons[i].split("/column/");
-
                 list.add(new Pokemon(attributes[1], Integer.parseInt(attributes[0]), null, Boolean.parseBoolean(attributes[2])));
             }
         }
