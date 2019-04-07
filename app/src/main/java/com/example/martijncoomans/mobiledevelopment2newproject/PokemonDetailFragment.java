@@ -69,7 +69,7 @@ public class PokemonDetailFragment extends Fragment {
     public void catchPokemon(Pokemon pokemon){
         Random rand = new Random();
         Toast toast = null;
-        /*if(pokemon.isCatched != true) {*/
+        if(pokemon.isCatched != true) {
             if(rand.nextInt(4) == 0) {
                 toast = Toast.makeText(mContext, "You caught the pokemon!", Toast.LENGTH_SHORT);
                 pokemons = StorageController.getPokemons(mContext);
@@ -88,11 +88,10 @@ public class PokemonDetailFragment extends Fragment {
             } else {
                 toast = Toast.makeText(mContext, "Pokemon escaped!", Toast.LENGTH_SHORT);
             }
-        /*}
+        }
         else {
-            button.setBackgroundColor(5555);
             toast = Toast.makeText(mContext, "U already caught this pokemon!", Toast.LENGTH_SHORT);
-        }*/
+        }
         toast.show();
     }
 
