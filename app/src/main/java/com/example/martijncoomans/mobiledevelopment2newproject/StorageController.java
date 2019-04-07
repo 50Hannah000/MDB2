@@ -10,18 +10,20 @@ public class StorageController {
 
     public StorageController() {  }
 
+    //function to get pokemon from the SharedPreferences
     public static List<Pokemon> getPokemons(Context context) {
         String data = getPrefs(context).getString("catchedPokemon", null);
         return data != null ? stringToList(data) : stringToList("");
     }
 
+    //function to set pokemon in the SharedPreferences
     public static void setPokemons(Context context, List<Pokemon> list) {
         SharedPreferences.Editor editor = getPrefs(context).edit();
         editor.putString("catchedPokemon", listToString(list));
         editor.commit();
     }
 
-    //function to create a string from the list of pokemons
+    //function to get the catched pokemon part of the SharedPreferences
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences("catchedPokemon", Context.MODE_PRIVATE);
     }
@@ -38,7 +40,7 @@ public class StorageController {
         return string;
     }
 
-    //function to create a list from string
+    //function to create a list of pokemon from string
     private static List<Pokemon> stringToList(String string) {
         List<Pokemon> list = new ArrayList<Pokemon>();
         if(string != "") {

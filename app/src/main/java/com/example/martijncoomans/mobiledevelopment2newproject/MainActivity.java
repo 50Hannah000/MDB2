@@ -17,6 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 import java.util.Arrays;
 import java.util.List;
@@ -84,6 +86,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initialize() {
+        //clear the view if the detail view is still there
+        if(getSupportFragmentManager().findFragmentById(R.id.detail_frame) != null) {
+            getSupportFragmentManager()
+                    .beginTransaction().
+                    remove(getSupportFragmentManager().findFragmentById(R.id.detail_frame)).commit();
+        }
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
