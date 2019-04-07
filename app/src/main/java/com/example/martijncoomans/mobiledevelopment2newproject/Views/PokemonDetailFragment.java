@@ -1,4 +1,4 @@
-package com.example.martijncoomans.mobiledevelopment2newproject;
+package com.example.martijncoomans.mobiledevelopment2newproject.Views;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -12,6 +12,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.martijncoomans.mobiledevelopment2newproject.CustomAdapter;
+import com.example.martijncoomans.mobiledevelopment2newproject.DownloadImageTask;
+import com.example.martijncoomans.mobiledevelopment2newproject.Pokemon;
+import com.example.martijncoomans.mobiledevelopment2newproject.R;
+import com.example.martijncoomans.mobiledevelopment2newproject.StorageController;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

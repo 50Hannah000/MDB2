@@ -17,6 +17,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.example.martijncoomans.mobiledevelopment2newproject.Views.PokemonDetailFragment;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
